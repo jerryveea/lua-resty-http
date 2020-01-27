@@ -246,6 +246,9 @@ end
 
 
 function _M.parse_uri(_, uri, query_in_path)
+    -- The below regex breaks, skip this function and pass in the expected values
+    -- to _M.request_uri(self, uri, params)
+
     if query_in_path == nil then query_in_path = true end
 
     local m, err = ngx_re_match(uri, [[^(?:(http[s]?):)?//([^:/\?]+)(?::(\d+))?([^\?]*)\??(.*)]], "jo")
@@ -834,8 +837,17 @@ end
 
 function _M.request_uri(self, uri, params)
     params = tbl_copy(params or {}) -- Take by value
+    -- uri looks like
+    -- {<scheme>, <host>, <port>, <path>}
 
-    local parsed_uri, err = self:parse_uri(uri, false)
+
+    local parsed_uri = uri
+    -- local parsed_uri, err = self:parse_uri(uri, false)
+    -- if parsed_uri then
+    --     print("parsed_uri: ... " .. parsed_uri)
+    -- else
+    --     print("err: " .. err)
+    -- end
     if not parsed_uri then
         return nil, err
     end
